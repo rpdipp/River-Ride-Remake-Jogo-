@@ -1,6 +1,14 @@
+# dependencies and build output
 node_modules
 dist
+
+# Android build files (the release APK in the project root is kept on purpose)
 android/app/build
-android/.gradle
 android/build
-*.apk
+android/.gradle
+android/local.properties
+
+# IDE / local tools
+.idea
+.claude
+*.log

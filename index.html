@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#1b1f14" />
+    <title>River Strike 1944</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="game"></div>
+    <div id="touch"></div>
+
+    <div id="hud" class="hidden">
+      <div class="top">
+        <div class="panel score"><small>PONTOS</small><b id="score">000000</b></div>
+        <div class="panel"><small>PONTE</small><b id="bridge">1</b></div>
+        <div class="panel"><small>KM/H</small><b id="speed">0</b></div>
+        <div id="lives"></div>
+        <button id="btnPause" class="icon" aria-label="Pausar">II</button>
+      </div>
+      <div id="toast"></div>
+      <div id="refuel">REABASTECENDO</div>
+      <div id="fuel">
+        <svg viewBox="0 0 120 74" aria-label="Combustível">
+          <path d="M10 62 A50 50 0 0 1 110 62" fill="none" stroke="#2c2a22" stroke-width="12" />
+          <path d="M10 62 A50 50 0 0 1 17 37" fill="none" stroke="#c0281e" stroke-width="12" />
+          <path d="M10 62 A50 50 0 0 1 110 62" fill="none" stroke="#d8cfa8" stroke-width="1.5" />
+          <g stroke="#d8cfa8" stroke-width="2">
+            <line x1="10" y1="62" x2="20" y2="62" /><line x1="60" y1="12" x2="60" y2="22" /><line x1="110" y1="62" x2="100" y2="62" />
+            <line x1="24.6" y1="26.6" x2="31.7" y2="33.7" /><line x1="95.4" y1="26.6" x2="88.3" y2="33.7" />
+          </g>
+          <text x="13" y="72">E</text><text x="56" y="38">½</text><text x="101" y="72">F</text>
+          <line id="needle" x1="60" y1="62" x2="60" y2="18" stroke="#ffb02e" stroke-width="3" stroke-linecap="round" transform="rotate(90 60 62)" />
+          <circle cx="60" cy="62" r="5" fill="#ffb02e" />
+        </svg>
+        <span>COMBUSTÍVEL</span>
+      </div>
+      <div id="joy"><div id="knob"></div></div>
+      <div id="fire"><span>FOGO</span></div>
+    </div>
+
+    <div id="title" class="screen">
+      <div class="card">
+        <div class="logo">
+          <span class="l1">RIVER STRIKE</span>
+          <span class="l2">1944</span>
+        </div>
+        <p class="sub">P-51D MUSTANG · FRENTE OCIDENTAL</p>
+        <p class="brief">Siga o rio atrás das linhas inimigas. Destrua as pontes, afunde as lanchas, abata os Bf&nbsp;109 e reabasteça sobre as barcaças de <b>FUEL</b> — sem tocar nas margens.</p>
+        <button id="btnStart" class="big">DECOLAR</button>
+        <p class="hi">RECORDE <b id="hiscore">0</b></p>
+        <div class="help">
+          <div><i class="ico joy"></i><span>Joystick à esquerda<br /><small>← → desvia · ↑ acelera · ↓ freia</small></span></div>
+          <div><i class="ico btn"></i><span>Botão FOGO à direita<br /><small>6 metralhadoras .50</small></span></div>
+        </div>
+        <button id="btnSound" class="small">SOM: LIGADO</button>
+      </div>
+    </div>
+
+    <div id="pause" class="screen hidden">
+      <div class="card">
+        <h2>PAUSADO</h2>
+        <button id="btnResume" class="big">CONTINUAR</button>
+        <button id="btnSound2" class="small">SOM: LIGADO</button>
+        <button id="btnQuit" class="small">ABANDONAR MISSÃO</button>
+      </div>
+    </div>
+
+    <div id="over" class="screen hidden">
+      <div class="card">
+        <h2>MISSÃO ENCERRADA</h2>
+        <p id="newRecord" class="record hidden">NOVO RECORDE!</p>
+        <div class="stats">
+          <div><small>PONTOS</small><b id="finalScore">0</b></div>
+          <div><small>PONTES</small><b id="finalBridges">0</b></div>
+          <div><small>RECORDE</small><b id="finalHi">0</b></div>
+        </div>
+        <button id="btnAgain" class="big">NOVA MISSÃO</button>
+        <button id="btnMenu" class="small">MENU</button>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

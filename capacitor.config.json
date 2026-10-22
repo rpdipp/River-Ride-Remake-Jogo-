@@ -1,0 +1,10 @@
+{
+  "appId": "com.riverstrike.game1944",
+  "appName": "River Strike 1944",
+  "webDir": "dist",
+  "backgroundColor": "#1b1f14",
+  "android": {
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": true
+  }
+}

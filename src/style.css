@@ -81,3 +81,12 @@ button.small { display: block; width: 100%; margin-top: 8px; padding: 10px; font
   .logo .l1 { font-size: 34px; }
   .logo .l2 { font-size: 40px; }
 }
+
+/* ---------------- PC (mouse + keyboard): hide touch controls, show key help */
+.keys { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  #joy, #fire { display: none; }
+  .help { display: none; }
+  .keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 14px; margin: 4px 0 6px; font-family: system-ui, sans-serif; font-weight: 600; font-size: 12px; }
+  .keys kbd { display: inline-block; min-width: 22px; padding: 2px 6px; margin-right: 3px; border: 1px solid rgba(216, 207, 168, 0.5); border-bottom-width: 3px; border-radius: 4px; background: rgba(0, 0, 0, 0.3); font: 700 11px system-ui, sans-serif; color: #fff4d0; }
+}

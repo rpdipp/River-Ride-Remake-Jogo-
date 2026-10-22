@@ -7,7 +7,8 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview --host",
-    "android:sync": "vite build && npx cap sync android"
+    "android:sync": "vite build && npx cap sync android",
+    "build:pc": "vite build --mode pc"
   },
   "dependencies": {
     "@capacitor/android": "^7.6.9",
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^7.6.9",
-    "vite": "^6.4.5"
+    "vite": "^6.4.5",
+    "vite-plugin-singlefile": "^2.3.4"
   }
 }

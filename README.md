@@ -49,10 +49,22 @@ src/
   input.js     joystick virtual e botão de tiro
   textures.js  texturas geradas em canvas (insígnias, placa FUEL, água)
 dev/bot.js     piloto automático de teste (só desenvolvimento)
+pc/            versão do jogo em arquivo único, aberta pelo "Jogar no PC.bat"
 android/       projeto Android (Capacitor)
 ```
 
-## Rodar no PC
+## Jogar no PC (Windows)
+
+1. Baixe o projeto (botão **Code → Download ZIP** no GitHub) e extraia.
+2. Dê dois cliques em **`Jogar no PC.bat`**.
+
+O jogo abre numa janela própria do Edge ou do Chrome, sem instalar nada (o jogo inteiro
+está em `pc/index.html`). Controles: setas ou WASD para pilotar, **Espaço** atira,
+**P** pausa, **Enter** decola.
+
+Depois de mudar o código, gere de novo a versão para PC com `npm run build:pc`.
+
+## Rodar no PC (desenvolvimento)
 
 ```bash
 npm install

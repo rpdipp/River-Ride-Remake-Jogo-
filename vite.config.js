@@ -1,6 +1,13 @@
 import { defineConfig } from 'vite';
+import { viteSingleFile } from 'vite-plugin-singlefile';
 
-export default defineConfig({
+// `--mode pc` builds the whole game into one HTML file (pc/) that opens straight from disk.
+export default defineConfig(({ mode }) => ({
   base: './',
-  build: { target: 'es2020', chunkSizeWarningLimit: 1000 },
-});
+  plugins: mode === 'pc' ? [viteSingleFile()] : [],
+  build: {
+    target: 'es2020',
+    chunkSizeWarningLimit: 1000,
+    ...(mode === 'pc' ? { outDir: 'pc', emptyOutDir: true } : {}),
+  },
+}));

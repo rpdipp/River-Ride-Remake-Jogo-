@@ -239,9 +239,18 @@ export class Game {
     const w = window.innerWidth, h = window.innerHeight;
     this.renderer.setSize(w, h);
     const aspect = w / h;
-    const t = clamp((aspect - 0.45) / (1.6 - 0.45), 0, 1);
-    this.camK = lerp(1.85, 1.15, t);
-    this.baseFov = lerp(72, 55, t);
+    if (aspect < 1) {
+      // portrait: tall view, camera further back
+      const t = clamp((aspect - 0.45) / 0.55, 0, 1);
+      this.camK = lerp(1.85, 1.45, t);
+      this.baseFov = lerp(72, 60, t);
+    } else {
+      // landscape: higher camera and longer look-ahead so the short screen still shows the river ahead
+      const t = clamp((aspect - 1.3) / 1.0, 0, 1);
+      this.camK = lerp(1.35, 1.45, t);
+      this.baseFov = lerp(58, 62, t);
+    }
+    this.landscape = aspect >= 1;
     this.camera.aspect = aspect;
     this.camera.fov = this.baseFov;
     this.camera.updateProjectionMatrix();
@@ -919,17 +928,22 @@ export class Game {
     if (this.state === 'hangar') {
       // show-room orbit around the selected plane, plane in the upper half of the screen
       const a = this.time * 0.35;
-      const r = 10 + 4 * k;
+      const r = this.landscape ? 8 + 2 * k : 10 + 4 * k;
       cam.position.set(p.x + Math.sin(a) * r, FLY_Y + 3 + k * 1.5, -p.d + Math.cos(a) * r);
-      cam.lookAt(p.x, FLY_Y - 2.6 - k * 1.6, -p.d);
+      cam.lookAt(p.x, FLY_Y - (this.landscape ? 0.6 : 2.6 + k * 1.6), -p.d);
       this.camX = p.x;
+      // landscape: the hangar card sits on the right, so shift the picture to put the plane on the left
+      const w = window.innerWidth, h = window.innerHeight;
+      if (this.landscape) cam.setViewOffset(w, h, w * 0.24, 0, w, h);
+      else if (cam.view) cam.clearViewOffset();
     } else {
+      if (cam.view && cam.view.enabled) cam.clearViewOffset();
       cam.position.set(
         this.camX + (Math.random() - 0.5) * sh,
         FLY_Y + 15 * k + (Math.random() - 0.5) * sh,
         -p.d + 15 * k,
       );
-      cam.lookAt(this.camX * 0.97, 0, -p.d - 16 * k);
+      cam.lookAt(this.camX * 0.97, 0, -p.d - (this.landscape ? 14.5 : 16) * k);
       cam.rotation.z += -vn * 0.03;
     }
     const fov = this.baseFov + clamp((p.speed - pc.baseSpeed) * 0.12, -4, 5);

@@ -47,6 +47,8 @@ Para criar outro avião ou cenário, basta acrescentar uma entrada em `src/confi
   ← → desvia · ↑ acelera · ↓ freia
 - **Botão FOGO** (metade direita): metralhadoras .50
 - Botão **voltar** do Android: pausa/continua.
+- **Vertical ou horizontal:** o jogo gira junto com o celular. Na horizontal a câmera sobe e o
+  campo de visão fica mais largo; o medidor de combustível vai para a lateral direita.
 - No PC (teste): setas/WASD + Espaço, P pausa.
 
 ## Tecnologia

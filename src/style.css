@@ -120,3 +120,30 @@ button.arrow:active { background: rgba(255, 176, 46, 0.3); }
   .sheet .card { width: min(380px, 100%); }
   .desc { display: none; }
 }
+
+/* ---------------- Landscape phones: fuel gauge moves to the right edge, above the fire button */
+@media (orientation: landscape) {
+  #fuel { left: auto; right: calc(env(safe-area-inset-right, 0px) + 22px); bottom: calc(var(--sb) + 156px); transform: none; width: 116px; }
+  #toast { top: 30%; }
+}
+@media (orientation: landscape) and (max-height: 360px) {
+  #fuel { bottom: auto; top: calc(var(--st) + 62px); width: 100px; }
+}
+
+/* ---------------- Landscape phones: compact hangar on the right, plane on the left */
+@media (orientation: landscape) and (max-height: 500px) {
+  .screen.sheet { padding-top: 8px; padding-bottom: 8px; }
+  .sheet .card { padding: 10px 14px 12px; }
+  .sheet .card::before { display: none; }
+  .sel { grid-template-columns: 38px 1fr 38px; }
+  .sel b { font-size: 16px; }
+  .sel small { font-size: 11px; }
+  button.arrow { height: 36px; font-size: 22px; }
+  .dots { margin-top: 3px; }
+  .bars { gap: 2px; margin-bottom: 6px; }
+  .bars div { font-size: 10px; grid-template-columns: 96px 1fr; }
+  .bars b, .bars em { height: 6px; }
+  .sheet button.big { padding: 10px; margin: 6px 0 4px; font-size: 18px; }
+  .sheet button.small { padding: 7px; margin-top: 4px; }
+  .keyhint { display: none !important; }
+}

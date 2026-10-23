@@ -16,6 +16,7 @@
         <div class="panel score"><small>PONTOS</small><b id="score">000000</b></div>
         <div class="panel"><small>PONTE</small><b id="bridge">1</b></div>
         <div class="panel"><small>KM/H</small><b id="speed">0</b></div>
+        <div id="armor" class="panel hidden" title="Blindagem"><small>BLIND.</small><b>■</b></div>
         <div id="lives"></div>
         <button id="btnPause" class="icon" aria-label="Pausar">II</button>
       </div>
@@ -46,13 +47,13 @@
           <span class="l1">RIVER STRIKE</span>
           <span class="l2">1944</span>
         </div>
-        <p class="sub">P-51D MUSTANG · FRENTE OCIDENTAL</p>
+        <p class="sub">CAÇAS ALIADOS · FRENTE OCIDENTAL</p>
         <p class="brief">Siga o rio atrás das linhas inimigas. Destrua as pontes, afunde as lanchas, abata os Bf&nbsp;109 e reabasteça sobre as barcaças de <b>FUEL</b> — sem tocar nas margens.</p>
         <button id="btnStart" class="big">DECOLAR</button>
         <p class="hi">RECORDE <b id="hiscore">0</b></p>
         <div class="help">
           <div><i class="ico joy"></i><span>Joystick à esquerda<br /><small>← → desvia · ↑ acelera · ↓ freia</small></span></div>
-          <div><i class="ico btn"></i><span>Botão FOGO à direita<br /><small>6 metralhadoras .50</small></span></div>
+          <div><i class="ico btn"></i><span>Botão FOGO à direita<br /><small>metralhadoras</small></span></div>
         </div>
         <div class="keys">
           <span><kbd>←</kbd><kbd>→</kbd> desviar</span>
@@ -62,6 +63,28 @@
           <span><kbd>Enter</kbd> decolar</span>
         </div>
         <button id="btnSound" class="small">SOM: LIGADO</button>
+      </div>
+    </div>
+
+    <div id="hangar" class="screen sheet hidden">
+      <div class="card">
+        <h3>HANGAR</h3>
+        <div class="sel">
+          <button id="planePrev" class="arrow" aria-label="Avião anterior">‹</button>
+          <div><b id="planeName"></b><small id="planeCountry"></small><span id="planeDots" class="dots"></span></div>
+          <button id="planeNext" class="arrow" aria-label="Próximo avião">›</button>
+        </div>
+        <p id="planeDesc" class="desc"></p>
+        <div id="planeStats" class="bars"></div>
+        <h3>CENÁRIO</h3>
+        <div class="sel">
+          <button id="thPrev" class="arrow" aria-label="Cenário anterior">‹</button>
+          <div><b id="thName"></b><small id="thSub"></small><span id="thDots" class="dots"></span></div>
+          <button id="thNext" class="arrow" aria-label="Próximo cenário">›</button>
+        </div>
+        <button id="btnFly" class="big">DECOLAR</button>
+        <button id="btnBack" class="small">VOLTAR</button>
+        <p class="keyhint">← → avião · ↑ ↓ cenário · Enter decola</p>
       </div>
     </div>
 
@@ -77,6 +100,7 @@
     <div id="over" class="screen hidden">
       <div class="card">
         <h2>MISSÃO ENCERRADA</h2>
+        <p id="finalInfo" class="info"></p>
         <p id="newRecord" class="record hidden">NOVO RECORDE!</p>
         <div class="stats">
           <div><small>PONTOS</small><b id="finalScore">0</b></div>

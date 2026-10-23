@@ -12,9 +12,26 @@ for (let x = -110; x < 110; x += 2.5) XS.push(x);
 for (let x = 110; x <= 300; x += 10) XS.push(x);
 
 const C = (h) => new THREE.Color(h);
-const FIELDS = [0x6f8f3a, 0x7c9845, 0x9ea25a, 0x5d7c33, 0xb3a660, 0x8a7a4c, 0x6a8a40, 0xa4b06a].map(C);
-const HEDGE = C(0x34502a), SAND = C(0xb7a77c), BED = C(0x3e4a33), MUD = C(0x6d6448), ROAD = C(0x7a7062);
+let FIELDS, HEDGE, SAND, BED, MUD, ROAD;
+let T; // current theatre (see config.js)
 const tmp = new THREE.Color();
+
+/** Switch colours/scenery style. Chunks built afterwards use the new theatre. */
+export function setTerrainTheme(theme) {
+  T = theme;
+  const g = theme.ground;
+  FIELDS = g.fields.map(C);
+  HEDGE = C(g.hedge);
+  SAND = C(g.sand);
+  BED = C(g.bed);
+  MUD = C(g.mud);
+  ROAD = C(g.road);
+  const S = shared();
+  S.mats.churchWall.color.set(theme.church.wall);
+  S.mats.churchRoof.color.set(theme.church.roof);
+  // lit windows at night
+  S.mats.wall.emissive.set(theme.night ? 0x3a2408 : 0x000000);
+}
 
 function groundColor(x, d, e, out) {
   if (e < 0) return out.copy(SAND).lerp(BED, smoothstep(0, 6, -e));
@@ -54,11 +71,15 @@ function shared() {
   geoCache.spire = new THREE.ConeGeometry(0.75, 1, 4);
   geoCache.spire.rotateY(Math.PI / 4);
   geoCache.spire.translate(0, 0.5, 0);
+  geoCache.pine = new THREE.ConeGeometry(1, 1, 7);
+  geoCache.pine.translate(0, 0.5, 0);
   geoCache.mats = {
     ground: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.96, metalness: 0 }),
     tree: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, flatShading: true }),
     wall: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 }),
     roof: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.85, flatShading: true }),
+    churchWall: new THREE.MeshStandardMaterial({ color: 0xcfc4a8, roughness: 0.9 }),
+    churchRoof: new THREE.MeshStandardMaterial({ color: 0x3f4648, roughness: 0.7, flatShading: true }),
   };
   geoCache.ready = true;
   return geoCache;
@@ -163,29 +184,34 @@ export function buildChunk(i) {
     houses.push({ x, d, y: heightFromEdge(x, d, e) - 0.3, w: 5 + big * 4, h: 3.5 + big * 3, l: 6 + r() * 5, rot: r() < 0.5 ? 0 : Math.PI / 2, t: r() });
   }
 
-  const tr = instanced(S.tree, S.mats.tree, trees, (o, t, c) => {
+  const tc = T.tree, conifer = tc.conifer;
+  const tr = instanced(conifer ? S.pine : S.tree, S.mats.tree, trees, (o, t, c) => {
     o.position.set(t.x, t.y - 0.5, -t.d);
-    o.scale.set(t.s * 1.5, t.s * 1.9, t.s * 1.5);
+    if (conifer) o.scale.set(t.s * 1.3, t.s * 4.2, t.s * 1.3);
+    else o.scale.set(t.s * 1.5, t.s * 1.9, t.s * 1.5);
     o.rotation.set(0, t.t * 6, 0);
-    c.setHSL(0.24 + t.t * 0.07, 0.42, 0.18 + t.t * 0.1);
+    c.setHSL(tc.h + t.t * tc.hv, tc.s, tc.l + t.t * tc.lv);
   });
-  const pp = instanced(S.poplar, S.mats.tree, poplars, (o, t, c) => {
+  const pc = T.poplar;
+  const pp = instanced(conifer ? S.pine : S.poplar, S.mats.tree, poplars, (o, t, c) => {
     o.position.set(t.x, t.y - 0.5, -t.d);
-    o.scale.set(1.5, 11 + t.t * 3, 1.5);
+    if (conifer) o.scale.set(2.6, 10 + t.t * 4, 2.6);
+    else o.scale.set(1.5, 11 + t.t * 3, 1.5);
     o.rotation.set(0, 0, 0);
-    c.setHSL(0.26, 0.45, 0.16 + t.t * 0.06);
+    c.setHSL(pc.h, pc.s, pc.l + t.t * 0.06);
   });
+  const wc = T.wall, rc = T.roof;
   const wl = instanced(S.wall, S.mats.wall, houses, (o, t, c) => {
     o.position.set(t.x, t.y, -t.d);
     o.scale.set(t.w, t.h, t.l);
     o.rotation.set(0, t.rot, 0);
-    c.setHSL(0.11, 0.25, 0.68 + t.t * 0.15);
+    c.setHSL(wc.h, wc.s, wc.l + t.t * wc.lv);
   });
   const rf = instanced(S.roof, S.mats.roof, houses, (o, t, c) => {
     o.position.set(t.x, t.y + t.h, -t.d);
     o.scale.set(t.l, t.w * 0.9, t.w);
     o.rotation.set(0, t.rot + Math.PI / 2, 0);
-    c.setHSL(0.03 + t.t * 0.03, 0.55, 0.3 + t.t * 0.1);
+    c.setHSL(rc.h + t.t * rc.hv, rc.s, rc.l + t.t * rc.lv);
   });
   for (const m of [tr, pp, wl, rf]) if (m) group.add(m);
 
@@ -209,8 +235,8 @@ export function buildChunk(i) {
     const spire = new THREE.Mesh(S.spire, S.mats.roof);
     spire.scale.set(4.4, 10, 4.4);
     spire.position.set(0, 17, 9);
-    nave.material = tower.material = new THREE.MeshStandardMaterial({ color: 0xcfc4a8, roughness: 0.9 });
-    roof.material = spire.material = new THREE.MeshStandardMaterial({ color: 0x3f4648, roughness: 0.7, flatShading: true });
+    nave.material = tower.material = S.mats.churchWall;
+    roof.material = spire.material = S.mats.churchRoof;
     ch.add(nave, roof, tower, spire);
     ch.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
     ch.position.set(x, y, -churchD);
@@ -220,9 +246,6 @@ export function buildChunk(i) {
   group.userData.dispose = () => {
     geo.dispose();
     for (const m of [tr, pp, wl, rf]) if (m) m.dispose();
-    group.traverse((o) => {
-      if (o.isMesh && o.parent !== group && o.material !== S.mats.wall && o.material !== S.mats.roof) o.material.dispose();
-    });
   };
   return group;
 }

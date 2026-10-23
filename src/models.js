@@ -38,6 +38,24 @@ function ring(profile, y0, y1, mat) {
 function wingShape(o, side) {
   const s = side;
   const sh = new THREE.Shape();
+  if (o.elliptic) {
+    // Spitfire-style elliptical planform around the quarter-chord line
+    const N = 14;
+    const pts = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N;
+      const [le] = chordAt(o, t * o.span);
+      pts.push([s * o.span * t, le]);
+    }
+    for (let i = N; i >= 0; i--) {
+      const t = i / N;
+      const [, te] = chordAt(o, t * o.span);
+      pts.push([s * o.span * t, te]);
+    }
+    sh.moveTo(...pts[0]);
+    for (const q of pts.slice(1)) sh.lineTo(...q);
+    return sh;
+  }
   sh.moveTo(0, o.rootLE);
   sh.lineTo(s * o.span * 0.96, o.tipLE);
   sh.quadraticCurveTo(s * o.span * (o.square ? 1.0 : 1.03), (o.tipLE + o.tipTE) / 2, s * o.span * 0.96, o.tipTE);
@@ -63,6 +81,11 @@ function wing(o, side, mat) {
 
 function chordAt(o, x) {
   const t = Math.min(1, Math.abs(x) / o.span);
+  if (o.elliptic) {
+    const q = o.rootLE + (o.rootTE - o.rootLE) * 0.3;
+    const f = Math.max(0.12, Math.sqrt(Math.max(0, 1 - t * t)));
+    return [q + (o.rootLE - q) * f, q + (o.rootTE - q) * f];
+  }
   const le = lerp(o.rootLE, o.tipLE, t), te = lerp(o.rootTE, o.tipTE, t);
   return [le, te];
 }
@@ -152,13 +175,18 @@ function makeFighter(M, cfg) {
       w.add(d);
     }
     // gun ports
-    for (let k = 0; k < 3; k++) {
-      const x = side * (1.6 + k * 0.35);
+    for (let k = 0; k < (cfg.gunsPerWing ?? 3); k++) {
+      const x = side * ((cfg.gunStart ?? 1.6) + k * 0.3);
       const [le] = chordAt(W, x);
       const gun = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.35, 6), M.black);
       gun.rotation.x = Math.PI / 2;
       gun.position.set(x, 0, le - 0.1);
       w.add(gun);
+    }
+    if (cfg.radiator) {
+      const rad = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.32, 1.5), skin);
+      rad.position.set(side * 1.25, -0.22, 0.2);
+      w.add(rad);
     }
     g.add(w);
 
@@ -178,6 +206,13 @@ function makeFighter(M, cfg) {
   pilot.position.set(0, cfg.canopy.y + 0.18, cfg.canopy.z - 0.1);
   g.add(pilot);
 
+  if (cfg.radialFace) {
+    // radial engine: dark engine face inside the cowling
+    const face = new THREE.Mesh(new THREE.CircleGeometry(radiusAt(profile, noseY - 0.05) * 0.95, 24), M.exhaust);
+    face.position.z = -(noseY + 0.01);
+    face.rotation.y = Math.PI;
+    g.add(face);
+  }
   if (cfg.scoop) {
     const sc = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 10), skin);
     sc.scale.set(0.42, 0.36, 1.55);
@@ -186,7 +221,7 @@ function makeFighter(M, cfg) {
     g.add(sc);
   }
   for (const side of [-1, 1]) {
-    for (let k = 0; k < 6; k++) {
+    for (let k = 0; k < (cfg.exhausts ?? 6); k++) {
       const ex = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.1, 0.14), M.exhaust);
       ex.position.set(side * cfg.exhaustX, cfg.exhaustYOff, -(noseY - 0.9 - k * 0.2));
       g.add(ex);
@@ -250,6 +285,62 @@ export function createModels(tex) {
     sideDecals: [{ tex: tex.star, w: 1.2, h: 0.6, z: 0.9, y: 0.05 }],
   });
   p51.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+
+  // Supermarine Spitfire Mk IX: slim fuselage, elliptical wing, RAF day-fighter camouflage
+  M.raf = std(0x58614f, { roughness: 0.7, metalness: 0.2 });
+  M.sky = std(0xb9c4a6, { roughness: 0.6 });
+  const spitProfile = [
+    [-4.6, 0], [-4.55, 0.08], [-3.6, 0.28], [-2.2, 0.46], [-0.8, 0.6], [0.6, 0.64],
+    [2.0, 0.6], [3.3, 0.5], [4.0, 0.4], [4.3, 0.3], [4.32, 0],
+  ];
+  const spitfire = makeFighter(M, {
+    profile: spitProfile, skin: M.raf, scale: 0.55,
+    rings: [
+      [-3.4, -3.0, M.sky],
+      [-2.6, -2.35, M.white], [-2.35, -2.1, M.black], [-2.1, -1.85, M.white], [-1.85, -1.6, M.black], [-1.6, -1.35, M.white],
+    ],
+    spinnerR: 0.32, spinnerMat: M.raf, blades: 4, propLen: 1.6,
+    wing: { span: 5.6, rootLE: -1.75, rootTE: 0.85, thick: 0.17, dihedral: 0.1, elliptic: true },
+    wingY: -0.4, stripes: true, gunsPerWing: 2, gunStart: 1.9, radiator: true,
+    wingDecals: [
+      { side: -1, x: 3.6, tex: tex.roundel, w: 0.95, h: 0.95 },
+      { side: 1, x: 3.6, tex: tex.roundel, w: 0.95, h: 0.95 },
+    ],
+    stab: { span: 1.65, rootLE: 3.45, rootTE: 4.45, thick: 0.07, dihedral: 0, elliptic: true },
+    stabY: 0.1,
+    fin: [[3.2, 0.3], [4.55, 0.25], [4.65, 1.0], [4.45, 1.55], [4.05, 1.7], [3.6, 1.3], [3.3, 0.7]],
+    canopy: { s: [0.34, 0.45, 0.85], y: 0.5, z: -0.3 },
+    scoop: false, exhaustX: 0.36, exhaustYOff: 0.14,
+    sideDecals: [{ tex: tex.roundel, w: 0.8, h: 0.8, z: 1.0, y: 0.05 }],
+  });
+  spitfire.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+
+  // Republic P-47D Thunderbolt: huge radial-engine fuselage, eight .50 guns
+  M.od = std(0x55573a, { roughness: 0.75, metalness: 0.15 });
+  M.graySide = std(0x8d9196, { roughness: 0.6, metalness: 0.3 });
+  const p47Profile = [
+    [-5.3, 0], [-5.25, 0.1], [-4.2, 0.36], [-2.8, 0.62], [-1.2, 0.84], [0.4, 0.94],
+    [2.0, 0.98], [3.6, 0.96], [4.7, 0.92], [5.15, 0.86], [5.2, 0],
+  ];
+  const p47 = makeFighter(M, {
+    profile: p47Profile, skin: M.od, scale: 0.55,
+    rings: [
+      [4.45, 5.15, M.red],
+      [-3.6, -3.25, M.white], [-3.25, -2.9, M.black], [-2.9, -2.55, M.white], [-2.55, -2.2, M.black], [-2.2, -1.85, M.white],
+    ],
+    spinnerR: 0.36, spinnerMat: M.black, blades: 4, propLen: 2.0, radialFace: true,
+    wing: { span: 6.2, rootLE: -2.25, rootTE: 1.15, tipLE: -1.35, tipTE: 0.25, thick: 0.24, dihedral: 0.08 },
+    wingY: -0.55, stripes: true, gunsPerWing: 4, gunStart: 1.9,
+    wingDecals: [{ side: -1, x: 4.6, tex: tex.star, w: 1.6, h: 0.8 }],
+    stab: { span: 2.4, rootLE: 3.9, rootTE: 5.25, tipLE: 4.45, tipTE: 5.1, thick: 0.09, dihedral: 0 },
+    stabY: 0.15,
+    fin: [[3.4, 0.4], [5.35, 0.3], [5.45, 1.75], [5.05, 2.15], [4.55, 2.05], [3.7, 0.95]],
+    finMat: M.od,
+    canopy: { s: [0.46, 0.6, 1.15], y: 0.72, z: -0.25 },
+    scoop: false, exhausts: 3, exhaustX: 0.86, exhaustYOff: -0.35,
+    sideDecals: [{ tex: tex.star, w: 1.3, h: 0.65, z: 1.2, y: 0.05 }],
+  });
+  p47.traverse((o) => { if (o.isMesh) o.castShadow = true; });
 
   const bfProfile = [
     [-4.5, 0], [-4.45, 0.08], [-3, 0.42], [-1.2, 0.58], [0.3, 0.64], [2.0, 0.62], [3.4, 0.52], [3.95, 0.43], [4.0, 0],
@@ -397,6 +488,7 @@ export function createModels(tex) {
   return {
     materials: M,
     p51: () => p51.clone(),
+    plane: (id) => ({ p51, spitfire, p47 }[id] || p51).clone(),
     bf109: () => bf109.clone(),
     boat: () => boat.clone(),
     barge: () => barge.clone(),

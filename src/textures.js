@@ -70,6 +70,18 @@ function usStarTex() {
   return toTex(c);
 }
 
+function roundelTex() {
+  const [c, g] = canvas(128, 128);
+  const rings = [[62, '#e8c23a'], [56, '#1f2f6b'], [36, '#f0f0f0'], [22, '#b3261e']];
+  for (const [r, col] of rings) {
+    g.beginPath();
+    g.arc(64, 64, r, 0, Math.PI * 2);
+    g.fillStyle = col;
+    g.fill();
+  }
+  return toTex(c);
+}
+
 function crossTex() {
   const [c, g] = canvas(128, 128);
   g.fillStyle = '#f0f0f0';
@@ -152,6 +164,7 @@ export function makeTextures() {
     cloud: blobTex(256, 18, 0.45),
     star: usStarTex(),
     cross: crossTex(),
+    roundel: roundelTex(),
     fuel: fuelSignTex(),
     waterNormal: waterNormalTex(),
   };

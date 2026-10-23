@@ -90,3 +90,33 @@ button.small { display: block; width: 100%; margin-top: 8px; padding: 10px; font
   .keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 14px; margin: 4px 0 6px; font-family: system-ui, sans-serif; font-weight: 600; font-size: 12px; }
   .keys kbd { display: inline-block; min-width: 22px; padding: 2px 6px; margin-right: 3px; border: 1px solid rgba(216, 207, 168, 0.5); border-bottom-width: 3px; border-radius: 4px; background: rgba(0, 0, 0, 0.3); font: 700 11px system-ui, sans-serif; color: #fff4d0; }
 }
+
+/* ---------------- Hangar (bottom sheet: the selected plane stays visible above) */
+.screen.sheet { align-items: end; background: linear-gradient(rgba(10, 12, 6, 0) 30%, rgba(10, 12, 6, 0.7)); }
+.sheet .card { padding: 14px 16px 16px; }
+.card h3 { margin: 2px 0 6px; font-size: 11px; letter-spacing: 4px; color: var(--amber); }
+.sel { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 6px; }
+.sel > div { display: flex; flex-direction: column; line-height: 1.15; }
+.sel b { font-size: 20px; color: #fff4d0; letter-spacing: 1px; }
+.sel small { font-family: system-ui, sans-serif; font-weight: 600; font-size: 12px; opacity: 0.8; }
+button.arrow { height: 44px; border-radius: 8px; border: 1px solid rgba(216, 207, 168, 0.45); background: rgba(0, 0, 0, 0.3); color: var(--khaki); font: 900 26px var(--font); line-height: 1; cursor: pointer; }
+button.arrow:active { background: rgba(255, 176, 46, 0.3); }
+.dots { display: flex; justify-content: center; gap: 5px; margin-top: 5px; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(216, 207, 168, 0.3); }
+.dots i.on { background: var(--amber); }
+.desc { font-family: system-ui, sans-serif; font-weight: 500; font-size: 13px; line-height: 1.35; margin: 8px 0; color: #e8e0c4; min-height: 2.7em; }
+.bars { display: grid; gap: 4px; margin-bottom: 12px; text-align: left; }
+.bars div { display: grid; grid-template-columns: 110px 1fr; align-items: center; font-family: system-ui, sans-serif; font-weight: 600; font-size: 11px; }
+.bars i { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+.bars b, .bars em { height: 8px; border-radius: 2px; background: var(--amber); }
+.bars em { background: rgba(216, 207, 168, 0.18); }
+.keyhint { display: none; margin: 8px 0 0; font-family: system-ui, sans-serif; font-size: 11px; opacity: 0.7; }
+.info { margin: -8px 0 10px; font-family: system-ui, sans-serif; font-weight: 600; font-size: 12px; opacity: 0.8; }
+#armor b { color: #8fe08a; }
+#armor.broken b { color: #ff6a4d; animation: blink 0.4s infinite alternate; }
+@media (hover: hover) and (pointer: fine) { .keyhint { display: block; } }
+@media (orientation: landscape) and (max-height: 500px) {
+  .screen.sheet { align-items: center; justify-items: end; }
+  .sheet .card { width: min(380px, 100%); }
+  .desc { display: none; }
+}

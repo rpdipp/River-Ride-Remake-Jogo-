@@ -21,6 +21,26 @@ sobre um rio da França ocupada em 1944, com câmera traseira em terceira pessoa
 - Destruir uma ponte salva o checkpoint; o trecho do rio é sempre o mesmo (gerado por semente).
 - Vida extra a cada 10.000 pontos. A dificuldade aumenta a cada ponte.
 
+## Hangar: aviões e cenários
+
+Depois de tocar em **DECOLAR**, o hangar mostra o avião girando em exibição. Escolha o avião
+e o cenário com as setas ‹ › (no PC: ← → avião, ↑ ↓ cenário, Enter decola). A escolha fica salva.
+
+| Avião | Ponto forte | Ponto fraco |
+|---|---|---|
+| **P-51D Mustang** (EUA) | equilibrado, maior autonomia | — |
+| **Spitfire Mk IX** (Reino Unido) | o mais ágil, tiro mais rápido | tanque pequeno |
+| **P-47D Thunderbolt** (EUA) | 8 metralhadoras (rajada dupla) e blindagem que aguenta 1 impacto por vida, reparada a cada ponte | pesado nas curvas |
+
+| Cenário | Clima |
+|---|---|
+| **Normandia** | verão de 1944, dia claro, campos e vilas |
+| **Ardenas** | inverno de 1944, neve caindo, pinheiros, rio escuro |
+| **Missão Noturna** | Vale do Reno, 1945: luar, estrelas, holofotes antiaéreos, janelas acesas e mais flak |
+
+Para criar outro avião ou cenário, basta acrescentar uma entrada em `src/config.js`
+(e, para um avião novo, o modelo em `src/models.js`).
+
 ## Controles
 
 - **Joystick virtual** (metade esquerda da tela, aparece onde você toca):
@@ -39,11 +59,12 @@ sobre um rio da França ocupada em 1944, com câmera traseira em terceira pessoa
 
 ```
 src/
-  game.js      loop principal, estados, colisões, câmera, HUD
+  config.js    aviões e cenários (dados de voo, cores, clima)
+  game.js      loop principal, estados, hangar, colisões, câmera, HUD
   world.js     streaming de trechos do rio, pontes e inimigos
   river.js     geração procedural do rio (curvas, ilhas, pontes)
   terrain.js   malha do terreno, campos/sebes, árvores, casas, igreja
-  models.js    P-51, Bf 109, lancha, barcaça, tanque, ponte
+  models.js    P-51, Spitfire, P-47, Bf 109, lancha, barcaça, tanque, ponte
   effects.js   partículas (fogo, fumaça, flak, respingos), destroços
   audio.js     sons sintetizados
   input.js     joystick virtual e botão de tiro
